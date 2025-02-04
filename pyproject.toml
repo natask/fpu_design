@@ -1,0 +1,31 @@
+[project]
+name = "fpu-verification"
+version = "0.1.0"
+description = "FPU Verification Framework with RTL and x86 comparison"
+authors = []
+dependencies = [
+    "cocotb>=1.7.0",
+    "cocotb-test>=0.2.0",
+    "pytest>=7.0.0",
+    "numpy>=1.24.0",
+    "bitstring>=4.1.1",
+]
+requires-python = ">=3.8"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.1.0",
+    "black>=23.0.0",
+    "isort>=5.12.0",
+]
