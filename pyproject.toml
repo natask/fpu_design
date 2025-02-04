@@ -1,8 +1,24 @@
 [project]
-name = "fpu_design"
+name = "fpu_verification"
 version = "0.1.0"
 description = "Parametric FPU Implementation With Verification Framework in Python and SystemVerilog"
-authors = []
+readme = "README.md"
+requires-python = ">=3.8"
+license = { text = "MIT" }
+keywords = ["fpu", "rtl", "verification", "systemverilog", "cocotb"]
+authors = [
+    { name = "Natnael Kahssay" }
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Topic :: Scientific/Engineering :: Electronic Design Automation (EDA)",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+]
+
 dependencies = [
     "cocotb>=1.7.0",
     "cocotb-test>=0.2.0",
@@ -10,7 +26,19 @@ dependencies = [
     "numpy>=1.24.0",
     "bitstring>=4.1.1",
 ]
-requires-python = ">=3.8"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.1.0",
+    "black>=23.0.0",
+    "isort>=5.12.0",
+]
+
+test = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.1.0",
+]
 
 [build-system]
 requires = ["hatchling"]
@@ -22,10 +50,19 @@ python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
 
-[project.optional-dependencies]
-dev = [
-    "pytest>=7.0.0",
-    "pytest-cov>=4.1.0",
-    "black>=23.0.0",
-    "isort>=5.12.0",
-]
+[tool.black]
+line-length = 100
+target-version = ["py38"]
+include = '\.pyi?$'
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+line_length = 100
+
+[project.urls]
+Documentation = "https://github.com/username/fpu_verification#readme"
+Source = "https://github.com/username/fpu_verification"
+
+[project.scripts]
+run-fpu-tests = "fpu_verification.sim.run_tests:main"
