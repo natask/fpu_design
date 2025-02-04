@@ -1,7 +1,7 @@
 [project]
-name = "fpu-verification"
+name = "fpu_design"
 version = "0.1.0"
-description = "FPU Verification Framework with RTL and x86 comparison"
+description = "Parametric FPU Implementation With Verification Framework in Python and SystemVerilog"
 authors = []
 dependencies = [
     "cocotb>=1.7.0",
