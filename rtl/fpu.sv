@@ -12,16 +12,7 @@ module fpu #(
     input  logic [2:0]                             operation, // 000: add, 001: sub, 010: mul, 011: div
     output logic [EXPONENT_WIDTH+MANTISSA_WIDTH:0]  result,
     output logic                                    valid_out,
-    output logic                                    exception,
-
-    // HBM interface signals (assuming AXI-like interface)
-    output logic        hbm_req_valid,
-    input  logic        hbm_req_ready,
-    output logic [31:0] hbm_addr,
-    output logic        hbm_wr_en,
-    output logic [511:0] hbm_wr_data,  // Typical HBM interface width
-    input  logic        hbm_rd_valid,
-    input  logic [511:0] hbm_rd_data
+    output logic                                    exception
 );
 
     // Internal signals

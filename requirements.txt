@@ -1,3 +1,5 @@
 cocotb>=1.7.0
 cocotb-test>=0.2.0
 pytest>=7.0.0
+numpy>=1.24.0
+bitstring>=4.1.1
