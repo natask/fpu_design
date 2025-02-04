@@ -119,40 +119,44 @@ uv pip install -e .
 
 ## Running Tests
 
-### Using UV and Entry Points
+The project includes two types of testbenches: SystemVerilog and Python (cocotb). You can run them separately or together using the test runner.
 
-1. Run all tests using the package entry point:
+### Using the Test Runner
+
+The test runner supports running both SystemVerilog and cocotb tests:
+
 ```bash
+# Run all tests (both SystemVerilog and cocotb)
 uv pip run run-fpu-tests
+
+# Run only SystemVerilog testbench
+uv pip run run-fpu-tests --testbench sv
+
+# Run only cocotb tests
+uv pip run run-fpu-tests --testbench cocotb
+
+# Use a different simulator
+uv pip run run-fpu-tests --sim verilator
 ```
 
-2. Run with specific simulator:
-```bash
-SIM=icarus uv pip run run-fpu-tests
-```
+### Test Outputs
 
-3. Run with SystemVerilog support:
-```bash
-HDL_TOPLEVEL_LANG=systemverilog SIM=icarus uv pip run run-fpu-tests
-```
+- SystemVerilog testbench outputs are in `sim_build_sv/`
+- cocotb test outputs are in `sim_build_cocotb/`
+- Waveforms are generated in the respective build directories
 
-### Development Workflow
+### SystemVerilog Testbench (tb_sv/fpu_tb.sv)
+- Self-contained SystemVerilog testbench
+- Includes built-in test vector generation
+- Comprehensive assertion coverage
+- Direct hardware signal monitoring
 
-1. Install development dependencies:
-```bash
-uv pip install -e ".[dev]"
-```
-
-2. Run tests with coverage:
-```bash
-uv pip run pytest --cov=fpu_verification
-```
-
-3. Format code:
-```bash
-uv pip run black .
-uv pip run isort .
-```
+### Python cocotb Testbench (tb/test_fpu_comprehensive.py)
+- Uses multiple reference models (NumPy, x86, Python)
+- Automated test vector generation
+- Special case testing
+- Performance benchmarking
+- Python-based coverage collection
 
 ## Configuration Options
 
