@@ -69,9 +69,9 @@ module fpu #(
     logic exception_stage1, exception_stage2;
 
     // Addition/Subtraction implementation with power optimizations
-    function automatic logic [EXPONENT_WIDTH+MANTISSA_WIDTH:0] perform_add_sub;
-        input logic is_sub;
-        
+    function automatic logic [EXPONENT_WIDTH+MANTISSA_WIDTH:0] perform_add_sub(
+        input logic is_sub
+    );
         // Local variables
         logic [MANTISSA_WIDTH:0] mant_a, mant_b;
         logic [EXPONENT_WIDTH-1:0] exp_diff;
@@ -80,50 +80,48 @@ module fpu #(
         logic [4:0] lead_zero_count;
         logic effective_subtract;
         
-        // Power-efficient implementation
-        begin
-            // Add hidden bit
-            mant_a = {1'b1, mantissa_a};
-            mant_b = {1'b1, mantissa_b};
+        // Add hidden bit
+        mant_a = {1'b1, mantissa_a};
+        mant_b = {1'b1, mantissa_b};
 
-            // Determine effective operation
-            effective_subtract = is_sub ^ (sign_a ^ sign_b);
+        // Determine effective operation
+        effective_subtract = is_sub ^ (sign_a ^ sign_b);
 
-            // Exponent difference for alignment
-            if (exp_a >= exp_b) begin
-                exp_diff = exp_a - exp_b;
-                aligned_mant_a = {mant_a, 1'b0};
-                aligned_mant_b = ({mant_b, 1'b0} >> exp_diff);
-            end else begin
-                exp_diff = exp_b - exp_a;
-                aligned_mant_b = {mant_b, 1'b0};
-                aligned_mant_a = ({mant_a, 1'b0} >> exp_diff);
-            end
-
-            // Addition/Subtraction with carry-save adder for power efficiency
-            if (effective_subtract) begin
-                sum_result = aligned_mant_a - aligned_mant_b;
-            end else begin
-                sum_result = aligned_mant_a + aligned_mant_b;
-            end
-
-            // Normalization and leading zero detection
-            // Using priority encoder for better power efficiency
-            casez (sum_result)
-                24'b1???????????????????????????????: lead_zero_count = 5'd0;
-                24'b01??????????????????????????????: lead_zero_count = 5'd1;
-                24'b001?????????????????????????????: lead_zero_count = 5'd2;
-                // ... continue for other cases
-                default: lead_zero_count = 5'd23;
-            endcase
-
-            // Final result assembly
-            perform_add_sub = {
-                sign_result,
-                exp_result - lead_zero_count,
-                sum_result[MANTISSA_WIDTH-1:0]
-            };
+        // Exponent difference for alignment
+        if (exp_a >= exp_b) begin
+            exp_diff = exp_a - exp_b;
+            aligned_mant_a = {mant_a, 1'b0};
+            aligned_mant_b = ({mant_b, 1'b0} >> exp_diff);
+        end else begin
+            exp_diff = exp_b - exp_a;
+            aligned_mant_b = {mant_b, 1'b0};
+            aligned_mant_a = ({mant_a, 1'b0} >> exp_diff);
         end
+
+        // Addition/Subtraction with carry-save adder for power efficiency
+        if (effective_subtract) begin
+            sum_result = aligned_mant_a - aligned_mant_b;
+        end else begin
+            sum_result = aligned_mant_a + aligned_mant_b;
+        end
+
+        // Normalization and leading zero detection
+        // Using priority encoder for better power efficiency
+        casez (sum_result)
+            {1'b1, {(MANTISSA_WIDTH+1){1'b?}}}: lead_zero_count = 5'd0;
+            {1'b0, 1'b1, {MANTISSA_WIDTH{1'b?}}}: lead_zero_count = 5'd1;
+            {2'b00, 1'b1, {(MANTISSA_WIDTH-1){1'b?}}}: lead_zero_count = 5'd2;
+            {3'b000, 1'b1, {(MANTISSA_WIDTH-2){1'b?}}}: lead_zero_count = 5'd3;
+            {4'b0000, 1'b1, {(MANTISSA_WIDTH-3){1'b?}}}: lead_zero_count = 5'd4;
+            default: lead_zero_count = 5'd23;
+        endcase
+
+        // Final result assembly with proper bit widths
+        return {
+            sign_result,                                    // 1 bit
+            exp_result - lead_zero_count,                  // EXPONENT_WIDTH bits
+            sum_result[MANTISSA_WIDTH+1:2] >> lead_zero_count  // MANTISSA_WIDTH bits
+        };
     endfunction
 
     // Multiplication Logic
