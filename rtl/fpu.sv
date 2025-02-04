@@ -20,15 +20,13 @@ module fpu #(
     logic [EXPONENT_WIDTH-1:0] exp_a, exp_b, exp_result;
     logic [MANTISSA_WIDTH-1:0] mantissa_a, mantissa_b, mantissa_result;
     
-    // Unpacking stage
-    always_comb begin
-        sign_a = operand_a[EXPONENT_WIDTH+MANTISSA_WIDTH];
-        sign_b = operand_b[EXPONENT_WIDTH+MANTISSA_WIDTH];
-        exp_a = operand_a[EXPONENT_WIDTH+MANTISSA_WIDTH-1:MANTISSA_WIDTH];
-        exp_b = operand_b[EXPONENT_WIDTH+MANTISSA_WIDTH-1:MANTISSA_WIDTH];
-        mantissa_a = operand_a[MANTISSA_WIDTH-1:0];
-        mantissa_b = operand_b[MANTISSA_WIDTH-1:0];
-    end
+    // Field extraction using continuous assignments
+    assign sign_a = operand_a[EXPONENT_WIDTH+MANTISSA_WIDTH];
+    assign sign_b = operand_b[EXPONENT_WIDTH+MANTISSA_WIDTH];
+    assign exp_a = operand_a[EXPONENT_WIDTH+MANTISSA_WIDTH-1:MANTISSA_WIDTH];
+    assign exp_b = operand_b[EXPONENT_WIDTH+MANTISSA_WIDTH-1:MANTISSA_WIDTH];
+    assign mantissa_a = operand_a[MANTISSA_WIDTH-1:0];
+    assign mantissa_b = operand_b[MANTISSA_WIDTH-1:0];
 
     // Clock gating cell
     logic clk_gated;
